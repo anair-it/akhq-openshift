@@ -1,0 +1,114 @@
+# imagePullSecrets:
+#  - name: my-repository-secret
+image:
+  repository: tchiotludo/akhq
+  tag: latest
+
+# custom annotations (example: for prometheus)
+annotations: {}
+  #prometheus.io/scrape: 'true'
+  #prometheus.io/port: '8080'
+  #prometheus.io/path: '/prometheus'
+
+## You can put directly your configuration here... or add java opts or any other env vars
+extraEnv: []
+# - name: AKHQ_CONFIGURATION
+#   value: |
+#       akhq:
+#         secrets:
+#           docker-kafka-server:
+#             properties:
+#               bootstrap.servers: "kafka:9092"
+# - name: JAVA_OPTS
+#   value: "-Djavax.net.ssl.trustStore=/usr/local/openjdk-11/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=password"
+# - name: CLASSPATH
+#   value: "/any/additional/jars/desired.jar:/go/here.jar"
+
+## Or you can also use configmap for the configuration...
+configuration: |
+  akhq:
+    server:
+      access-log:
+        enabled: true
+        name: org.akhq.log.access
+        format: "[Date: {}] [Duration: {} ms] [Url: {} {}] [Status: {}] [Ip: {}] [User: {}]"
+
+    clients-defaults:
+      consumer:
+        properties:
+          isolation.level: read_committed
+    pagination:
+      page-size: 25
+      threads: 16
+    topic-data:
+      size: 50
+      poll-timeout: 1000
+    ui-options:
+      topic:
+        default-view: HIDE_INTERNAL
+        skip-consumer-groups: false
+        skip-last-record: true
+      topic-data:
+        sort: NEWEST
+
+existingSecrets: akhq-secrets
+
+# Any extra volumes to define for the pod (like keystore/truststore)
+extraVolumes: []
+
+# Any extra volume mounts to define for the akhq container
+extraVolumeMounts: []
+
+# Specify ServiceAccount for pod
+serviceAccountName: akhq-sa
+
+# Add your own init container or uncomment and modify the example.
+initContainers: {}
+#   create-keystore: 
+#     image: "openjdk:11-slim"
+#     command: ['sh', '-c', 'keytool']
+#     volumeMounts:
+#      - mountPath: /tmp
+#        name: certs
+
+securityContext: {}
+#  capabilities:
+#    drop:
+#      - ALL
+#  # readOnlyRootFilesystem: true
+#  runAsNonRoot: true
+#  runAsUser: 1000
+
+rbac:
+  create: true
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 8080
+  
+serviceMesh:
+  route: true
+  sidecar: true
+
+hostname: 
+
+route:
+  enabled: false
+
+readinessProbe:
+  prefix: "" # set same as `micronaut.server.context-path`
+
+resources: 
+  limits:
+   cpu: 500m
+   memory: 1024Mi
+  requests:
+   cpu: 50m
+   memory: 512Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

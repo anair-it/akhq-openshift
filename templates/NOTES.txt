@@ -1,0 +1,10 @@
+akhq is installed and can be accessed in the following ways:
+
+Local
+-----
+kubectl port-forward -n {{ .Release.Namespace }} {{ include "akhq.fullname" . }}-0 {{ .Values.service.port }}:{{ .Values.service.port }}
+Visit http://127.0.0.1:{{ .Values.service.port }}
+
+Openshift
+---------
+https://{{ template "akhq.fullname" . }}-{{ .Release.Namespace }}.{FQDN}/
