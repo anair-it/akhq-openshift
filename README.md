@@ -66,7 +66,7 @@
                         url: 
                         type: "confluent"
                         basic-auth-username: 
-                        basic-auth-password: [SHA256 password]
+                        basic-auth-password: 
             security:
                 groups:
                     topic-reader:
@@ -80,7 +80,7 @@
 
                 basic-auth:
                     - username: 
-                      password: 
+                      password: [SHA256 password]
                       groups:
                        - topic-reader
     ```
